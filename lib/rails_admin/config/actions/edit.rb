@@ -24,7 +24,7 @@ module RailsAdmin
             elsif request.put? # UPDATE
               sanitize_params_for!(request.xhr? ? :modal : :update)
 
-              @object.set_attributes(params[@abstract_model.param_key])
+              @object.set_attributes(params[@abstract_model.param_key]&.to_h)
               @authorization_adapter && @authorization_adapter.authorize(:update, @abstract_model, @object)
               changes = @object.changes
               if @object.save
