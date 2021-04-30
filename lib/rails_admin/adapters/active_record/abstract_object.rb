@@ -16,7 +16,10 @@ module RailsAdmin
         end
 
         def set_attributes(attributes)
-          object.assign_attributes(attributes.to_h) if attributes
+          safe_attributes = attributes&.to_h do |k,v|
+            [k, k.include?('_attributes') ? v.transform_values { |v2| v2.except(:id) }  : v]
+          end
+          object.assign_attributes(safe_attributes) if safe_attributes
         end
 
         def save(options = {validate: true})
