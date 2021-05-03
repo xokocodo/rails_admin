@@ -16,8 +16,18 @@ module RailsAdmin
         end
 
         def set_attributes(attributes)
-          safe_attributes = attributes&.to_h do |k,v|
-            [k, k.include?('_attributes') ? v.transform_values { |v2| v2.except(:id) }  : v]
+          safe_attributes = attributes&.to_h do |k, v|
+            if (m = k.match(/([a-zA-Z_]+)_attributes/)) && (klass = object.class.embedded_relations[m[1]]&.klass)
+              if klass.fields[:_id].default_val.nil?
+                value = v.transform_values { |v2| v2.except(:id) }
+                object[m[1]] = []
+              else
+                value = v
+              end
+            else
+              value = v
+            end
+            [k, value]
           end
           object.assign_attributes(safe_attributes) if safe_attributes
         end
