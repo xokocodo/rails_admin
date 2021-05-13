@@ -333,7 +333,7 @@ module RailsAdmin
         end
 
         def form_default_value
-          (default_value if force_default_value || (bindings[:object].new_record? && value.nil?)
+          (default_value if force_default_value || (bindings[:object].new_record? && value.nil?))
         end
 
         def form_value
